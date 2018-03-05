@@ -17,8 +17,8 @@ Y1          = trackPath(40,2);
 Psi0        = -2.6366;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
-sampleTime  = 0.001;             % Simulation Step Size [s]
-simTime     = 5;               % Simulation end time [s]
+sampleTime  = 0.01;             % Simulation Step Size [s]
+simTime     = 10;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]

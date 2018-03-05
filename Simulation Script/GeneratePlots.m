@@ -77,7 +77,7 @@ set(hsub2,'YAxisLocation','right')
 hold on
 hvref = plot([get(hsub2,'XLim')],[v_ref(1) v_ref(1)],'k');
 
-for i = 1:1/(sampleTime*100):length(Psi)
+for i = 1:1:length(Psi)
     set(hTrajectory,'XData',X(1:i),'YData',Y(1:i))
     set(hCar,'Xdata',X(i)+[X1(i) X2(i) X3(i) X4(i)], 'Ydata',Y(i)+[Y1(i) Y2(i) Y3(i) Y4(i)]);
     set(hAimPoint,'Xdata',aimPoints(1,i,:),'Ydata',aimPoints(2,i,:))
