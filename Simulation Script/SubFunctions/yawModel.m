@@ -1,7 +1,7 @@
 function r_ref = yawModel(velPoint,x)
 
 u = x(1);
-d = 2;
+d = norm(velPoint);
 
 headingReq = atan2(velPoint(2),velPoint(1));
 

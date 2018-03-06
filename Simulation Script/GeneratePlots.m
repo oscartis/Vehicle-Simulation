@@ -19,7 +19,8 @@ rDot    = x(6,:);
 
 
 %% Vehicle travel animation
-figure;
+fsize = get(groot,'ScreenSize');
+figure('Position',fsize);
 
 hsub1 = subplot(1,2,1);
 hsub2 = subplot(1,2,2);
@@ -28,11 +29,10 @@ axes(hsub1);
 subPos = get(hsub1,'Position');
 set(hsub1,'Position',[subPos(1)*0.8 subPos(2), 0.7, subPos(4)]);
 
-
-hTrajectory = plot(X(1),Y(1),'b--');
+hTrack = plot(trackPath(:,1),trackPath(:,2),'k');
 hTitle=title(sprintf('Time = %.1f',t(1)));
 hold on;
-hTrack = plot(trackPath(:,1),trackPath(:,2),'g--');
+hTrajectory = plot(X(1),Y(1),'r--','LineWidth',5);
 hAimPoint = plot([aimPoints(:,1,1),aimPoints(:,1,2)],'xb');
 axis equal;
 xlim([min(X)-10 max(X)+10])
@@ -83,11 +83,14 @@ for i = 1:1:length(Psi)
     set(hAimPoint,'Xdata',aimPoints(1,i,:),'Ydata',aimPoints(2,i,:))
     set(hTitle,'String',sprintf('Time= %0.1f',t(i)));
     
+    set(hbar,'YData',u(i)*3.6)                  % Tacometer
+    set(hvref,'YData',[v_ref(i) v_ref(i)]*3.6)  % Target Speed
     
-    set(hbar,'YData',u(i)*3.6)
-    set(hvref,'YData',[v_ref(i) v_ref(i)]*3.6)
-    drawnow;
-    
+    drawnow limitrate   % limitrate: Will skip this command if it has 
+                        % drawn a frame within the past 50 ms. Caps the
+                        % refresh rate at 20 hz. (Will make animation play
+                        % faster at the cost of missing frames).
+
 end
 
 %% Vehicle path and orientation

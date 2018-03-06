@@ -6,12 +6,12 @@ r = x(3);
 
 mu = mu0*(1-mu1*(Fz-Fz0));
 u_min = 3/3.6;
-u_max = 100/3.6;
+u_max = 70/3.6;
 
 k = 3;
 v = 1/(k*abs(yawRef)+1)*u_max;
 
-v_ref = 5;%max(u_min,v);
+v_ref = max(u_min,v);
 
 
 

@@ -2,8 +2,8 @@ function [headingRequest, velPoint, aimPoints]= genAimPoint(X,x,trackPath)
 
 u = x(1);
 
-dt = 1.5;
-velDist = max(u*dt,3);
+dt = 2;
+velDist = min(max(u*dt,3),10);
 aimDist = 3;
 
 pos = X(1:2)';

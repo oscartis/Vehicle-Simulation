@@ -18,7 +18,7 @@ Psi0        = -2.6366;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = 0.01;             % Simulation Step Size [s]
-simTime     = 10;               % Simulation end time [s]
+simTime     = 40;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -60,10 +60,11 @@ Fz0     = 4000;                 % Rated load for the tyres
 tvFrcLim= 2500;                 % Force limit for torque vectoring (each wheel)
 
 %% Cornering stiffness
-Fz      = g*[m*-l2/L m*l1/L]/2;
+Fz      = g*[m*-l2/L m*l1/L];
 mu      = mu0*(1-mu1*(Fz-Fz0));
 Ca1     = 20e3;
 Ca2     = 20e3;
+Ku      = (Ca2*l2-Ca1*l1)/(Ca1*Ca2*L);
 % c       = c0*(1-c1*(Fz-Fz0));
 % B       = c./(mu*C);
 

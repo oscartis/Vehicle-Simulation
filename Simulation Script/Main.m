@@ -7,7 +7,7 @@ t = 0;
 i = 1;
 
 x = zeros(6,n);
-x(:,1)      = [u0;0;0.5;0;0;0];
+x(:,1)      = [u0;0;0;0;0;0];
 X           = zeros(3,n);
 X(:,1)      = [X0;Y0;Psi0];
 phi         = zeros(1,n);
@@ -40,24 +40,19 @@ while t  <= simTime
     end
     
     [headingRequest(i), velPoint(:,i), aimPoints(:,i,:)] = genAimPoint(X(:,i),x(:,i),trackPath);
-    r_ref(i)            = yawModel(velPoint,x(:,i));
-    delta(:,i)          = steerRef(headingRequest(i),x(:,i));
-    delta(:,i)          = zeros(4,1);
-    if t > 5
-        delta(:,i)      = [0.02;.02;0;0];
-    end
+    r_ref(i)            = yawModel(velPoint(:,i),x(:,i));
+    delta(:,i)          = steerRef(headingRequest(i),x(:,i),L,Ku,m);
     
-%     [Fz(:,i), phiDDot(i), wheelLiftOffFlag(i)] = ...
-%         loadTransfer(x(:,i),phi(i),phiDot(i),m, ms, Ixx, hp, kLambda, kPhi, cLambda, ...
-%         cPhi, g, h2, h1, h0, h, w, L,l,A, Cd, Cl, rho);
-    Fz(:,i) = m*g*[-l(3);-l(4);l(1);l(2)]/(2*L);
+    [Fz(:,i), phiDDot(i), wheelLiftOffFlag(i)] = ...
+        loadTransfer(x(:,i),phi(i),phiDot(i),m, ms, Ixx, hp, kLambda, kPhi, cLambda, ...
+        cPhi, g, h2, h1, h0, h, w, L,l,A, Cd, Cl, rho);
+    %Fz(:,i) = m*g*[-l(3);-l(4);l(1);l(2)]/(2*L);
 
     [Fy(:,i), alpha(:,i)]    = tireModel(delta(:,i),x(:,i),l1, l2, w,B, C, D, E, Fz(:,i));
     [Fx(:,i), v_ref(i)] = longitudinalControl(x(:,i),r_ref(i),m,L, l,Fz(:,i),mu0,mu1,Fz0);
     Fx(:,i)             = Fx(:,i)*(1-spin);
     dx                  = motion(delta(:,i),Fy(:,i),Fx(:,i),m,Izz,l,w, x(:,i),sampleTime);
     xDot(:,i) = dx;
-    t = t + sampleTime;
     %% Integrate states
     
     if t < simTime
@@ -77,6 +72,7 @@ while t  <= simTime
         i = i+1;
     end
     
+    t = t + sampleTime;
 end
 
 Y   = X(2,:);
