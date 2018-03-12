@@ -62,14 +62,14 @@ tvFrcLim= 2500;                 % Force limit for torque vectoring (each wheel)
 %% Cornering stiffness
 Fz      = g*[m*-l2/L m*l1/L];
 mu      = mu0*(1-mu1*(Fz-Fz0));
-Ca1     = 20e3;
-Ca2     = 20e3;
+Ca1     = 56e3;
+Ca2     = 56e3;
 Ku      = (Ca2*l2-Ca1*l1)/(Ca1*Ca2*L);
 % c       = c0*(1-c1*(Fz-Fz0));
 % B       = c./(mu*C);
 
 D       = mu;   %[703.7844  454.6802]
-B       = [Ca1 Ca2]./(C*D);
+B       = [Ca1 Ca2]./(C*D.*Fz);
 
 
 % Ca1 = B(1)*C*D(1);
