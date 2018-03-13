@@ -17,12 +17,12 @@ Y1          = trackPath(40,2);
 Psi0        = -2.6366;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
-sampleTime  = 0.01;             % Simulation Step Size [s]
-simTime     = 40;               % Simulation end time [s]
+sampleTime  = .01;             % Simulation Step Size [s]
+simTime     = 60;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
-Izz     = 115;                  % Moment of inertia about z axis [kgm^2]
+Izz     = 133.32;                  % Moment of inertia about z axis [kgm^2]
 L       = 1.53;                 % Wheelbase [m]
 l1      = 0.55*L;               % Distance from COG to front axle [m]
 l2      = l1-L;                 % Distance from COG to rear axle [m]
@@ -30,7 +30,7 @@ l       = [l1;l1;l2;l2];
 w       = [1.25;-1.25;1.2;-1.2]/2;  % Track width [m]
 m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
-Ixx     = 100;                  % Vehicle inertia about X axis
+Ixx     = 30.031;                  % Vehicle inertia about X axis
 cPhi    = 7e4;                  % Vehicle total roll stiffness
 kPhi    = 8000;                 % Vehicle total roll damping
 cLambda = 0.55;                 % Vehcile roll stiffness distribution
@@ -52,28 +52,32 @@ rErrLim = 0;                    % Yaw rate error threshold for ESC
 escK    = 0;                    % Yaw rate gain for ESC
 C       = 1.9;                  % Magic formula parameter
 E       = 1;                    % Magic formula parameter
-mu0     = 1;                    % Road tyre friction coefficient
-mu1     = 6e-5;                 % Tyre load based non-linearity parameter for friction
 c0      = 21.3/2;               % Tyre stiffness parameter
 c1      = 1.11e-4;              % Tyre load based non-linearity parameter for stiffness
-Fz0     = 4000;                 % Rated load for the tyres
+Fz0     = 1500;                 % Rated load for the tyres
 tvFrcLim= 2500;                 % Force limit for torque vectoring (each wheel)
 
 %% Cornering stiffness
-Fz      = g*[m*-l2/L m*l1/L];
+Fz = m*g*[-l2;-l2;l1;l1]/(2*L);
+
+Ca = 2e-15*(Fz).^6 -2e-11*(Fz).^5 + 5e-8*(Fz).^4 ... 
+    - 6e-5*(Fz).^3 + 0.0066*(Fz).^2 + 53.121*(Fz) + 2.9346;
+
+Ku = ((Ca(3)+Ca(4))*l2-(Ca(1)+Ca(2))*l1)/((Ca(1)+Ca(2))*(Ca(3)+Ca(4))*(l1-l2));
+
+Fz0     = 1500;
+mu0     = 2.1385;                    
+mu1     = -2.3862e-04;
 mu      = mu0*(1-mu1*(Fz-Fz0));
-Ca1     = 56e3;
-Ca2     = 56e3;
-Ku      = (Ca2*l2-Ca1*l1)/(Ca1*Ca2*L);
-% c       = c0*(1-c1*(Fz-Fz0));
-% B       = c./(mu*C);
 
-D       = mu;   %[703.7844  454.6802]
-B       = [Ca1 Ca2]./(C*D.*Fz);
-
-
-% Ca1 = B(1)*C*D(1);
-% Ca2 = B(2)*C*D(2);
-% ku = (-l2/L*m/Ca1-l1/L*m/Ca2);
+%% Tire Data
+load TireData
+tireLoad = TireData(1,2:end);
+tireLoad = -tireLoad;
+%tireLoad(end) = [];
+tireSlip = TireData(2:end,1)*pi/180;
+tireForce = -TireData(2:end,2:end);
+%tireForce(:,end) = [];
+tireForce = tireForce;
 
 disp('Vehicle data loaded');

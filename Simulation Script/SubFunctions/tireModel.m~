@@ -27,7 +27,7 @@ Fy_max = sqrt((Fz.*mu).^2-Fx.^2);       % Saturation limit
 alpha = delta - atan2(v+l*r,u+w*r);     % Wheel slip
 alpha = min(max(alpha,tireSlip(1)),tireSlip(end));
 
-Fy = interp2(tireSlip,tireLoad,tireForce',alpha,Fz,'linear',tireLoad(1)/Fz*interp1(tireSlip,tireForce(:,1),alpha)); % Look-up table from 
+Fy = interp2(tireSlip,tireLoad',tireForce,alpha,Fz,tireLoad(1)/Fz*); % Look-up table from 
                                                     % experimental data
 
 Fy = min(max(Fy,-Fy_max),Fy_max);       % Saturate based on friction circle

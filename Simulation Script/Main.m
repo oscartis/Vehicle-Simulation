@@ -30,6 +30,7 @@ Fz          = delta;
 wheelLiftOffFlag = zeros(1,n);
 spin = 0;
 
+%%
 
 while t  <= simTime
     
@@ -46,13 +47,13 @@ while t  <= simTime
     [Fz(:,i), phiDDot(i), wheelLiftOffFlag(i)] = ...
         loadTransfer(x(:,i),phi(i),phiDot(i),m, ms, Ixx, hp, kLambda, kPhi, cLambda, ...
         cPhi, g, h2, h1, h0, h, w, L,l,A, Cd, Cl, rho);
-    %Fz(:,i) = m*g*[-l(3);-l(4);l(1);l(2)]/(2*L);
 
-    [Fy(:,i), alpha(:,i)]    = tireModel(delta(:,i),x(:,i),l1, l2, w,B, C, D, E, Fz(:,i));
     [Fx(:,i), v_ref(i)] = longitudinalControl(x(:,i),r_ref(i),m,L, l,Fz(:,i),mu0,mu1,Fz0);
     Fx(:,i)             = Fx(:,i)*(1-spin);
+    [Fy(:,i), alpha(:,i), Ku]  = tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlip,tireForce);
     dx                  = motion(delta(:,i),Fy(:,i),Fx(:,i),m,Izz,l,w, x(:,i),sampleTime);
     xDot(:,i) = dx;
+    
     %% Integrate states
     
     if t < simTime

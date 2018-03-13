@@ -25,4 +25,4 @@ else
     Fx = [-l(3)/L;-l(3)/L;L(1)/L;l(1)/L]*fx/2;
 end
 
-Fx = min(mu.*Fz,Fx);
+Fx = max(min(mu.*Fz,Fx),-mu.*Fz);

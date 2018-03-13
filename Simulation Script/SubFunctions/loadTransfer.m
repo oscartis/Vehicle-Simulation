@@ -21,7 +21,7 @@ dFz=[0;0;0;0];
 
 %%=======================================================================%%
 % load transfer for roll and steady state load transfer for pitch
-phiDDot = (ms*ay*h0-kPhi*phiDot-(cPhi)*phi+ms*g*h0*sin(phi))/(Ixx+ms*h0^2);
+phiDDot = 0;%(ms*ay*h0-kPhi*phiDot-(cPhi)*phi+ms*g*h0*sin(phi))/(Ixx+ms*h0^2);
 
 dFzy = [-1/w(1)*(m*(-l(3))*ay*h1/L/2) + (cPhi1*phi+kPhi1*phiDot), ...
     -1/w(2)*(m*(-l(3))*ay*h1/L/2) - (cPhi1*phi+kPhi1*phiDot), ...
@@ -47,3 +47,4 @@ if any(Fz < 0)
     wheelLiftOffFlag = 1;
 end
 Fz(Fz < eps)  = eps;
+Fz = Fz*((m*g+Fl)/sum(Fz));
