@@ -5,20 +5,20 @@ clear all;
 close all;
 
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
-u0          = 5;          % Longitudinal Speed [m/s]
+u0          = 10;          % Longitudinal Speed [m/s]
 
-trackPath   = load('trackReconstructed.mat');
-trackPath   = trackPath.trackReconstructed;
+trackPath   = load('TrackPath_smooth.mat');
+trackPath   = trackPath.TrackPath_smooth;
 
 X0          = trackPath(1,1); 
 Y0          = trackPath(1,2);
 X1          = trackPath(40,1); 
 Y1          = trackPath(40,2);
-Psi0        = -2.6366;%atan2(X1-X0,Y1-Y0);
+Psi0        = 2.8102;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 60;               % Simulation end time [s]
+simTime     = 120;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -28,12 +28,13 @@ l1      = 0.55*L;               % Distance from COG to front axle [m]
 l2      = l1-L;                 % Distance from COG to rear axle [m]
 l       = [l1;l1;l2;l2];
 w       = [1.25;-1.25;1.2;-1.2]/2;  % Track width [m]
+wRadius = 0.22;
 m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
 Ixx     = 30.031;                  % Vehicle inertia about X axis
-cPhi    = 7e4;                  % Vehicle total roll stiffness
-kPhi    = 8000;                 % Vehicle total roll damping
-cLambda = 0.55;                 % Vehcile roll stiffness distribution
+cPhi    = (2.2300e+04 + 1.7997e+04);                  % Vehicle total roll stiffness
+kPhi    = 0;                 % Vehicle total roll damping
+cLambda = 0.5534;                 % Vehcile roll stiffness distribution
 kLambda = 0.57;                 % Vehicle roll damping distribution
 
 h       = 0.282;                % Height of CoG
@@ -57,6 +58,14 @@ c1      = 1.11e-4;              % Tyre load based non-linearity parameter for st
 Fz0     = 1500;                 % Rated load for the tyres
 tvFrcLim= 2500;                 % Force limit for torque vectoring (each wheel)
 
+%%
+velocityLimit = 70/3.6;
+lateralAccelerationLimit = g*0.75;
+accelerationLimit = 0.8*g;
+decelerationLimit = -g;
+headingErrorDependency = 0.4;
+
+
 %% Cornering stiffness
 Fz = m*g*[-l2;-l2;l1;l1]/(2*L);
 
@@ -66,7 +75,7 @@ Ca = 2e-15*(Fz).^6 -2e-11*(Fz).^5 + 5e-8*(Fz).^4 ...
 Ku = ((Ca(3)+Ca(4))*l2-(Ca(1)+Ca(2))*l1)/((Ca(1)+Ca(2))*(Ca(3)+Ca(4))*(l1-l2));
 
 Fz0     = 1500;
-mu0     = 2.1385;                    
+mu0     = 2.1385*0.66;                    
 mu1     = -2.3862e-04;
 mu      = mu0*(1-mu1*(Fz-Fz0));
 

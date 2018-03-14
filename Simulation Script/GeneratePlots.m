@@ -33,7 +33,7 @@ hTrack = plot(trackPath(:,1),trackPath(:,2),'k');
 hTitle=title(sprintf('Time = %.1f',t(1)));
 hold on;
 hTrajectory = plot(X(1),Y(1),'r--','LineWidth',5);
-hAimPoint = plot([aimPoints(:,1,1),aimPoints(:,1,2)],'xb');
+hAimPoint = plot(aimPoint(:,1),aimPoint(:,2),'xb');
 axis equal;
 xlim([min(X)-10 max(X)+10])
 ylim([min(Y)-10 max(Y)+10])
@@ -75,22 +75,24 @@ set(hsub2,'Color',get(gcf,'Color'))
 set(hsub2,'XColor',get(gcf,'Color'))
 set(hsub2,'YAxisLocation','right')
 hold on
-hvref = plot([get(hsub2,'XLim')],[v_ref(1) v_ref(1)],'k');
+%hvref = plot([get(hsub2,'XLim')],[v_ref(1) v_ref(1)],'k');
 
-for i = 1:1:length(Psi)
+for i = 1:5:length(Psi)
+    tic
     set(hTrajectory,'XData',X(1:i),'YData',Y(1:i))
     set(hCar,'Xdata',X(i)+[X1(i) X2(i) X3(i) X4(i)], 'Ydata',Y(i)+[Y1(i) Y2(i) Y3(i) Y4(i)]);
-    set(hAimPoint,'Xdata',aimPoints(1,i,:),'Ydata',aimPoints(2,i,:))
+    set(hAimPoint,'Xdata',aimPoint(1,i),'Ydata',aimPoint(2,i))
     set(hTitle,'String',sprintf('Time= %0.1f',t(i)));
     
     set(hbar,'YData',u(i)*3.6)                  % Tacometer
-    set(hvref,'YData',[v_ref(i) v_ref(i)]*3.6)  % Target Speed
+   % set(hvref,'YData',[v_ref(i) v_ref(i)]*3.6)  % Target Speed
     
-    drawnow limitrate   % limitrate: Will skip this command if it has 
+    drawnow %limitrate   % limitrate: Will skip this command if it has 
                         % drawn a frame within the past 50 ms. Caps the
                         % refresh rate at 20 hz. (Will make animation play
                         % faster at the cost of missing frames).
-
+    cycleTime = toc;
+    pause(5*sampleTime-toc)
 end
 
 %% Vehicle path and orientation
