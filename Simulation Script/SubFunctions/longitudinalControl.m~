@@ -1,0 +1,9 @@
+function [Fx] = longitudinalControl(Torque, FxBrakes)
+u = x(1);
+slip = (omega - u)/(u);
+
+Fx = interp2(tireLoad, tireSlipx, tireForcex,Fz,slip);
+
+omegaDot = (Fx
+
+end

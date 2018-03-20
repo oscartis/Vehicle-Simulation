@@ -17,7 +17,6 @@ ax      = x(4,:);
 ay      = x(5,:);
 rDot    = x(6,:);
 
-
 %% Vehicle travel animation
 fsize = get(groot,'ScreenSize');
 figure('Position',fsize);

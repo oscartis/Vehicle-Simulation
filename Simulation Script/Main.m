@@ -9,7 +9,7 @@ i = 1;
 x = zeros(6,n);
 x(:,1)      = [u0;0;0;0;0;0];
 X           = zeros(3,n);
-X(:,1)      = [X0;Y0;Psi0];
+%X(:,1)      = [X0;Y0;Psi0];
 xDot        = zeros(6,n);
 phi         = zeros(1,n);
 phiDot      = phi;
@@ -37,12 +37,13 @@ while t  <= simTime
     
     [headingRequest(i), localPath, aimPoint(:,i)] = ...
         genAimPoint(X(:,i),x(:,i),trackPath);
+    headingRequest(i) = 0;
     
     r_ref(i)    = ...
         yawModel(aimPoint(:,i),x(:,i));
     
-    delta(:,i)  = ...
-        steerRef(headingRequest(i),x(:,i),L,Ku,m);
+    delta(:,i)  = [0;0;0;0];%...
+       % steerRef(headingRequest(i),x(:,i),L,Ku,m);
     
     if abs(mean(delta((delta(:,i) ~=0),i))) > 5*pi/180
         spin = 1;
@@ -60,7 +61,8 @@ while t  <= simTime
         accelerationLimit, decelerationLimit, headingRequest(i), ...
         headingErrorDependency, localPath');
     
-    [Torque] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Iz,wRadius,m);
+    [Torque] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m);
+    [FxBrakes] = brakes(accelerationRequest(i),x(:,i),sampleTime);
     
     [Fx(:,i), preFx] = ...
         longitudinalControl(x(:,i),accelerationRequest(i),m,Fz(:,i),mu0,mu1,Fz0,preFx,sampleTime);
@@ -97,7 +99,7 @@ while t  <= simTime
     end
     
     if mod(i,100) == 0
-        fprintf('Running: %2.1f \% \n',t/simTime*100)
+        fprintf('Running: %2.1f \n',t/simTime*100)
     end
     
     t = t + sampleTime;
@@ -105,8 +107,8 @@ end
 
 Y   = X(2,:);
 Psi = X(3,:);
-X   = X(1,:);
+%X   = X(1,:);
 
 t = (0:sampleTime:simTime);
 
-GeneratePlots;
+%GeneratePlots;
