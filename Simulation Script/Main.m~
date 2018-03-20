@@ -29,15 +29,14 @@ Fz          = delta;
 
 wheelLiftOffFlag = zeros(1,n);
 spin = 0;
-omega = u0/wRadius*[1;1;1;1];
-Torque = [0;0;0;0];
+omega = 
 
 %%
 
 while t  <= simTime
     
-   [headingRequest(i), localPath, aimPoint(:,i)] = ...
-       genAimPoint(X(:,i),x(:,i),trackPath);
+    [headingRequest(i), localPath, aimPoint(:,i)] = ...
+        genAimPoint(X(:,i),x(:,i),trackPath);
     headingRequest(i) = 0;
     
     r_ref(i)    = ...
@@ -62,17 +61,17 @@ while t  <= simTime
         accelerationLimit, decelerationLimit, headingRequest(i), ...
         headingErrorDependency, localPath');
     
-    [Torque] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque);
-    [FxBrakes] = brakes(accelerationRequest(i));
+    [Torque] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m);
+    [FxBrakes] = brakes(accelerationRequest(i),x(:,i),sampleTime);
     
     [Fx(:,i), omega] = ...
-        longitudinalControl(Torque, x(:,1), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX);
+        longitudinalControl(Torque, FxBrakes, Iyw, omega,sampleTime);
         
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
     
     [Fy(:,i), alpha(:,i), Ku]  = ...
-        tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY);
+        tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlip,tireForce);
     
     dx = ...
         motion(delta(:,i),Fy(:,i),Fx(:,i),m,Izz,l,w, x(:,i),sampleTime);

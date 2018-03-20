@@ -84,6 +84,7 @@ localPath = [cos(Psi) sin(Psi);-sin(Psi) cos(Psi)]*(trackPath(cPi:cPi+i20m,1:2)-
             else
                 d = dist;
                 i = i-1;
+                dd = 1;
             end
         end
         

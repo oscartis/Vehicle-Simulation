@@ -1,4 +1,4 @@
-function [TMotor] = motorController(accReq,x,yawRef,sampleTime,Iz,wRadius,m)
+function [TMotor] = motorController(accReq,x,yawRef,sampleTime,Iz,wRadius,m,Torque_pre)
 
 r = x(3);
 dr = x(6);
@@ -13,5 +13,5 @@ T_error = Torque-Torque_pre;     % Change from last time step
 
 dT_max = 20 * sampleTime * 20;  % Maximum change motors can produce in one time step
 
-TMotor = Fx_pre + min(max(T_error,-dT_max),dT_max);  % Calc torque
+TMotor = Torque_pre + min(max(T_error,-dT_max),dT_max);  % Calc torque
 end

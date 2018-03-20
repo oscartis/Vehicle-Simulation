@@ -32,6 +32,7 @@ wRadius = 0.22;
 m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
 Ixx     = 30.031;                  % Vehicle inertia about X axis
+Iyw     = 5;
 cPhi    = (2.2300e+04 + 1.7997e+04);                  % Vehicle total roll stiffness
 kPhi    = 0;                 % Vehicle total roll damping
 cLambda = 0.5534;                 % Vehcile roll stiffness distribution
@@ -80,14 +81,14 @@ mu1     = -2.3862e-04;
 mu      = mu0*(1-mu1*(Fz-Fz0));
 
 %% Tire Data
-load TireData
-load tireDatax
-tireLoad = TireData(1,2:end);
+load tireDataY
+load tireDataX
+tireLoad = tireDataY(1,2:end);
 tireLoad = -tireLoad;
 
-tireSlip = TireData(2:end,1)*pi/180;
-tireSlipx = tireDatax(2:end,1);
-tireForce = -TireData(2:end,2:end);
-tireForcex = tireDatax(2:end,2:end);
+tireSlipY = tireDataY(2:end,1)*pi/180;
+tireSlipX = tireDataX(2:end,1);
+tireForceY = -tireDataY(2:end,2:end);
+tireForceX = tireDataX(2:end,2:end);
 
 disp('Vehicle data loaded');
