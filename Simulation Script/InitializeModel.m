@@ -81,12 +81,13 @@ mu      = mu0*(1-mu1*(Fz-Fz0));
 
 %% Tire Data
 load TireData
+load tireDatax
 tireLoad = TireData(1,2:end);
 tireLoad = -tireLoad;
-%tireLoad(end) = [];
+
 tireSlip = TireData(2:end,1)*pi/180;
+tireSlipx = tireDatax(2:end,1);
 tireForce = -TireData(2:end,2:end);
-%tireForce(:,end) = [];
-tireForce = tireForce;
+tireForcex = tireDatax(2:end,2:end);
 
 disp('Vehicle data loaded');
