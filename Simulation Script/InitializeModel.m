@@ -18,7 +18,7 @@ Psi0        = 2.8102;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 5;               % Simulation end time [s]
+simTime     = 50;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]

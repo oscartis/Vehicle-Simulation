@@ -63,10 +63,10 @@ while t  <= simTime
         headingErrorDependency, localPath');
     
     [Torque] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque);
-    [FxBrakes] = brakes(accelerationRequest(i));
+    [FxBrakes] = brakes(accelerationRequest(i),m);
     
     [Fx(:,i), omega] = ...
-        longitudinalControl(Torque, x(:,1), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX);
+        longitudinalControl(Torque, x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
         
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
@@ -108,7 +108,7 @@ end
 
 Y   = X(2,:);
 Psi = X(3,:);
-%X   = X(1,:);
+X   = X(1,:);
 
 t = (0:sampleTime:simTime);
 

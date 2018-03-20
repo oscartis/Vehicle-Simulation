@@ -1,4 +1,4 @@
-function Fx = brakes(accelerationRequest)
+function Fx = brakes(accelerationRequest,m)
 
 if accelerationRequest > 0
     Fx = [0;0;0;0];

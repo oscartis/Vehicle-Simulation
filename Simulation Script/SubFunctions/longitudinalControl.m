@@ -1,16 +1,19 @@
-function [Fx,omega] = longitudinalControl(Torque,x, Fz, FxBrakes,Iyw,omega,sampleTime,tireLoad,tireSlipX,tireForceX)
+function [Fx,omega] = longitudinalControl(Torque,x, Fz, FxBrakes,Iyw,omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius)
 u = x(1);
 
+slip = [0;0;0;0];
 if u == 0
     slip(omega == 0) = 0;
     slip(omega ~= 0) = tireSlipX(end);
 else
-    slip = (omega*wRadius-u)/u;
+    slip = (omega*wRadius-u)/abs(u);
 end
 
-Fx = interp2(tireLoad, tireSlipX, tireForceX,Fz,slip');
+slip = min(max(slip,tireSlipX(1)),tireSlipX(end));
 
-omegaDot = (-Fx+Torque+FxBrakes)/Iyw;
-omega = omegaDot*sampleTime;
+Fx = interp2(tireLoad,tireSlipX, tireForceX,Fz,slip,'linear',Fz'/(4*tireLoad(1))*interp1(tireSlipX,tireForceX(:,1),slip));
+
+omegaDot = (Torque + wRadius*(-Fx + FxBrakes))/Iyw;
+omega = omega + omegaDot*sampleTime;
 
 end
