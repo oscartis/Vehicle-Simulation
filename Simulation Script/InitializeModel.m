@@ -5,7 +5,7 @@ clear all;
 close all;
 
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
-u0          = 0;          % Longitudinal Speed [m/s]
+u0          = 5;          % Longitudinal Speed [m/s]
 
 trackPath   = load('TrackPath_smooth.mat');
 trackPath   = trackPath.TrackPath_smooth;
@@ -18,7 +18,7 @@ Psi0        = 2.8102;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 50;               % Simulation end time [s]
+simTime     = 10;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]

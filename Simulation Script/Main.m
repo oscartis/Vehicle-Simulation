@@ -43,7 +43,7 @@ while t  <= simTime
     r_ref(i)    = ...
         yawModel(aimPoint(:,i),x(:,i));
     
-    delta(:,i)  = [0;0;0;0];%...
+    delta(:,i)  = [0.1;0.1;0;0];%...
        % steerRef(headingRequest(i),x(:,i),L,Ku,m);
     
     if abs(mean(delta((delta(:,i) ~=0),i))) > 5*pi/180
@@ -70,6 +70,7 @@ while t  <= simTime
         
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
+    Fx(:,i) = [0;0;0;0];
     
     [Fy(:,i), alpha(:,i), Ku]  = ...
         tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY);
