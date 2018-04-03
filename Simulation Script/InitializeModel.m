@@ -5,7 +5,7 @@ clear all;
 close all;
 
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
-u0          = 0;          % Longitudinal Speed [m/s]
+u0          = 5;          % Longitudinal Speed [m/s]
 
 trackPath   = load('TrackPath_smooth.mat');
 trackPath   = trackPath.TrackPath_smooth;
@@ -18,7 +18,7 @@ Psi0        = 2.8102;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 50;               % Simulation end time [s]
+simTime     = 10;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -32,7 +32,7 @@ wRadius = 0.22;
 m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
 Ixx     = 30.031;                  % Vehicle inertia about X axis
-Iyw     = 5;
+Iyw     = 2;
 cPhi    = (2.2300e+04 + 1.7997e+04);                  % Vehicle total roll stiffness
 kPhi    = 0;                 % Vehicle total roll damping
 cLambda = 0.5534;                 % Vehcile roll stiffness distribution
