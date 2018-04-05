@@ -9,7 +9,7 @@ i = 1;
 x = zeros(6,n);
 x(:,1)      = [u0;0;0;0;0;0];
 X           = zeros(3,n);
-%X(:,1)      = [X0;Y0;Psi0];
+X(:,1)      = [X0;Y0;Psi0];
 xDot        = zeros(6,n);
 phi         = zeros(1,n);
 phiDot      = phi;
@@ -38,13 +38,13 @@ while t  <= simTime
     
    [headingRequest(i), localPath, aimPoint(:,i)] = ...
        genAimPoint(X(:,i),x(:,i),trackPath);
-    headingRequest(i) = 0;
+
     
     r_ref(i)    = ...
-        yawModel(aimPoint(:,i),x(:,i));
+        yawModel(headingRequest(i),x(:,i));
     
-    delta(:,i)  = [0.1;0.1;0;0];%...
-       % steerRef(headingRequest(i),x(:,i),L,Ku,m);
+    delta(:,i)  = ...
+       steerRef(r_ref(i),x(:,i),L,Ku,m);
     
     if abs(mean(delta((delta(:,i) ~=0),i))) > 5*pi/180
         spin = 1;
@@ -113,4 +113,4 @@ X   = X(1,:);
 
 t = (0:sampleTime:simTime);
 
-%GeneratePlots;
+GeneratePlots;
