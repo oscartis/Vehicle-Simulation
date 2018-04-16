@@ -46,12 +46,11 @@ while t  <= simTime
     delta(:,i)  = ...
        steerRef(r_ref(i),x(:,i),L,Ku,m);
     
-    if abs(mean(delta((delta(:,i) ~=0),i))) > 5*pi/180
+    if abs(x(3,i)) > 1
         spin = 1;
-    elseif abs(mean(delta(delta(:,i) ~=0),i)) < 1*pi/180
+    elseif abs(x(3,i)) < 0.2
         spin = 0;
     end
-    
     
     [Fz(:,i), phiDDot(i), wheelLiftOffFlag(i)] = ...
         loadTransfer(x(:,i),phi(i),phiDot(i),m, ms, Ixx, hp, kLambda, kPhi, cLambda, ...
@@ -70,7 +69,6 @@ while t  <= simTime
         
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
-    Fx(:,i) = [0;0;0;0];
     
     [Fy(:,i), alpha(:,i), Ku]  = ...
         tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY);

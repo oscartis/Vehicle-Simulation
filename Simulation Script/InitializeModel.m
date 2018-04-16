@@ -7,18 +7,18 @@ close all;
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
 u0          = 5;          % Longitudinal Speed [m/s]
 
-trackPath   = load('TrackPath_smooth.mat');
-trackPath   = trackPath.TrackPath_smooth;
+trackPath   = load('trackReconstructed.mat');
+trackPath   = trackPath.trackReconstructed;
 
 X0          = trackPath(1,1); 
 Y0          = trackPath(1,2);
-X1          = trackPath(40,1); 
-Y1          = trackPath(40,2);
-Psi0        = 2.5;%atan2(X1-X0,Y1-Y0);
+X1          = trackPath(10,1); 
+Y1          = trackPath(10,2);
+Psi0        = atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 50;               % Simulation end time [s]
+simTime     = 25;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -88,7 +88,7 @@ tireLoad = -tireLoad;
 
 tireSlipY = tireDataY(2:end,1)*pi/180;
 tireSlipX = tireDataX(2:end,1);
-tireForceY = -tireDataY(2:end,2:end);
-tireForceX = tireDataX(2:end,2:end);
+tireForceY = -tireDataY(2:end,2:end)*0.66;
+tireForceX = tireDataX(2:end,2:end)*0.66;
 
 disp('Vehicle data loaded');
