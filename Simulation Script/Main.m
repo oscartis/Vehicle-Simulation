@@ -74,7 +74,7 @@ while t  <= simTime
         tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY);
     
     dx = ...
-        motion(delta(:,i),Fy(:,i),Fx(:,i),m,Izz,l,w, x(:,i),sampleTime);
+        motion(delta(:,i),Fy(:,i),Fx(:,i),m,Izz,l,w, x(:,i),sampleTime,rho,A,Cd);
     
     xDot(:,i) = dx;
     

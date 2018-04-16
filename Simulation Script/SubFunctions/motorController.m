@@ -12,7 +12,7 @@ Torque = [0;0;1;1]*accReq*m/(2*wRadius) + [0;0;-1;1]*Mz/2; % Calc desired torque
     
 T_error = Torque-Torque_pre;     % Change from last time step
 
-dT_max = 2 * sampleTime * 20;  % Maximum change motors can produce in one time step
+dT_max = 50*sampleTime;  % Maximum change motors can produce in one time step
 
 TMotor = Torque_pre + min(max(T_error,-dT_max),dT_max);  % Calc torque
 
