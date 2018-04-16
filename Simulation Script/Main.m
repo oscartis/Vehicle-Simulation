@@ -30,7 +30,7 @@ Fz          = delta;
 wheelLiftOffFlag = zeros(1,n);
 spin = 0;
 omega = u0/wRadius*[1;1;1;1];
-Torque = [0;0;0;0];
+Torque = zeros(4,n);
 
 %%
 
@@ -61,11 +61,11 @@ while t  <= simTime
         accelerationLimit, decelerationLimit, headingRequest(i), ...
         headingErrorDependency, localPath');
     
-    [Torque] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque);
+    [Torque(:,i+1)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i),omega);
     [FxBrakes] = brakes(accelerationRequest(i),m);
     
     [Fx(:,i), omega] = ...
-        longitudinalControl(Torque, x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
+        longitudinalControl(Torque(i+1), x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
         
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
