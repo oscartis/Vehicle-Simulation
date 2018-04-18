@@ -10,30 +10,34 @@ u0          = 5;          % Longitudinal Speed [m/s]
 trackPath   = load('trackReconstructed.mat');
 trackPath   = trackPath.trackReconstructed;
 
+
 X0          = trackPath(1,1); 
 Y0          = trackPath(1,2);
-X1          = trackPath(40,1); 
-Y1          = trackPath(40,2);
-Psi0        = -2.6366;%atan2(X1-X0,Y1-Y0);
+X1          = trackPath(10,1); 
+Y1          = trackPath(10,2);
+Psi0        = 3;%-1.0931;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
-sampleTime  = 0.001;             % Simulation Step Size [s]
-simTime     = 5;               % Simulation end time [s]
+sampleTime  = .01;             % Simulation Step Size [s]
+simTime     = 50;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
-Izz     = 115;                  % Moment of inertia about z axis [kgm^2]
+Izz     = 133.32;                  % Moment of inertia about z axis [kgm^2]
 L       = 1.53;                 % Wheelbase [m]
 l1      = 0.55*L;               % Distance from COG to front axle [m]
 l2      = l1-L;                 % Distance from COG to rear axle [m]
 l       = [l1;l1;l2;l2];
 w       = [1.25;-1.25;1.2;-1.2]/2;  % Track width [m]
+wRadius = 0.22;
+G_ratio = 16;
 m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
-Ixx     = 100;                  % Vehicle inertia about X axis
-cPhi    = 7e4;                  % Vehicle total roll stiffness
-kPhi    = 8000;                 % Vehicle total roll damping
-cLambda = 0.55;                 % Vehcile roll stiffness distribution
+Ixx     = 30.031;                  % Vehicle inertia about X axis
+Iyw     = 2;
+cPhi    = (2.2300e+04 + 1.7997e+04);                  % Vehicle total roll stiffness
+kPhi    = 0;                 % Vehicle total roll damping
+cLambda = 0.5534;                 % Vehcile roll stiffness distribution
 kLambda = 0.57;                 % Vehicle roll damping distribution
 
 h       = 0.282;                % Height of CoG
@@ -52,27 +56,51 @@ rErrLim = 0;                    % Yaw rate error threshold for ESC
 escK    = 0;                    % Yaw rate gain for ESC
 C       = 1.9;                  % Magic formula parameter
 E       = 1;                    % Magic formula parameter
-mu0     = 1;                    % Road tyre friction coefficient
-mu1     = 6e-5;                 % Tyre load based non-linearity parameter for friction
 c0      = 21.3/2;               % Tyre stiffness parameter
 c1      = 1.11e-4;              % Tyre load based non-linearity parameter for stiffness
-Fz0     = 4000;                 % Rated load for the tyres
+Fz0     = 1500;                 % Rated load for the tyres
 tvFrcLim= 2500;                 % Force limit for torque vectoring (each wheel)
 
+%%
+velocityLimit = 70/3.6;
+lateralAccelerationLimit = g*0.75;
+accelerationLimit = 0.8*g;
+decelerationLimit = -g;
+headingErrorDependency = 0.4;
+
+
 %% Cornering stiffness
-Fz      = g*[m*-l2/L m*l1/L]/2;
+Fz = m*g*[-l2;-l2;l1;l1]/(2*L);
+
+Ca = 2e-15*(Fz).^6 -2e-11*(Fz).^5 + 5e-8*(Fz).^4 ... 
+    - 6e-5*(Fz).^3 + 0.0066*(Fz).^2 + 53.121*(Fz) + 2.9346;
+
+Ku = ((Ca(3)+Ca(4))*l2-(Ca(1)+Ca(2))*l1)/((Ca(1)+Ca(2))*(Ca(3)+Ca(4))*(l1-l2));
+
+Fz0     = 1500;
+mu0     = 2.1385*0.66;                    
+mu1     = -2.3862e-04;
 mu      = mu0*(1-mu1*(Fz-Fz0));
-Ca1     = 20e3;
-Ca2     = 20e3;
-% c       = c0*(1-c1*(Fz-Fz0));
-% B       = c./(mu*C);
 
-D       = mu;   %[703.7844  454.6802]
-B       = [Ca1 Ca2]./(C*D);
+%% Tire Data
+load tireDataY
+load tireDataX
+tireLoad = tireDataY(1,2:end);
+tireLoad = -tireLoad;
 
+tireSlipY = tireDataY(2:end,1)*pi/180;
+tireSlipX = tireDataX(2:end,1);
+tireForceY1 = -tireDataY(2:26,2:end);
+tireForceY2 = -tireForceY1;
+tireForceX1 = tireDataX(2:11,2:end);
+tireForceX2 = -tireForceX1;
 
-% Ca1 = B(1)*C*D(1);
-% Ca2 = B(2)*C*D(2);
-% ku = (-l2/L*m/Ca1-l1/L*m/Ca2);
-
+tireForceX = cat(1,tireForceX1,sort(tireForceX2));
+tireForceY = cat(1,tireForceY1,sort(tireForceY2));
 disp('Vehicle data loaded');
+
+%% Controller parameters
+
+q = 10;
+rc = 15;
+Nh = 5;

@@ -1,28 +1,19 @@
-function [Fx, v_ref] = longitudinalControl(x,yawRef,m,L, l,Fz,mu0,mu1,Fz0)
-
+function [Fx,omega] = longitudinalControl(Torque,x, Fz, FxBrakes,Iyw,omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius)
 u = x(1);
-r = x(3);
 
-
-mu = mu0*(1-mu1*(Fz-Fz0));
-u_min = 3/3.6;
-u_max = 100/3.6;
-
-k = 3;
-v = 1/(k*abs(yawRef)+1)*u_max;
-
-v_ref = 5;%max(u_min,v);
-
-
-
-e = v_ref - u;
-
-fx = e*m;
-
-if fx > 0
-    Fx = [0;0;1;1]*fx/2;
+slip = [0;0;0;0];
+if u == 0
+    slip(omega == 0) = 0;
+    slip(omega ~= 0) = tireSlipX(end);
 else
-    Fx = [-l(3)/L;-l(3)/L;L(1)/L;l(1)/L]*fx/2;
+    slip = (omega*wRadius-u)/abs(u);
 end
 
-Fx = min(mu.*Fz,Fx);
+slip = min(max(slip,tireSlipX(1)),tireSlipX(end));
+
+Fx = interp2(tireLoad,tireSlipX, tireForceX,Fz,slip,'linear',Fz'/(4*tireLoad(1))*interp1(tireSlipX,tireForceX(:,1),slip));
+
+omegaDot = (Torque + wRadius*(-Fx + FxBrakes))/Iyw;
+omega = omega + omegaDot*sampleTime;
+
+end

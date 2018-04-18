@@ -1,10 +1,8 @@
-function [headingRequest, velPoint, aimPoints]= genAimPoint(X,x,trackPath)
+function [headingRequest, localPath, aimPoint]= genAimPoint(X,x,trackPath)
 
 u = x(1);
 
-dt = 1.5;
-velDist = max(u*dt,3);
-aimDist = 3;
+aimDist = 5;
 
 pos = X(1:2)';
 Psi = X(3);
@@ -63,52 +61,17 @@ else
 end
 
 d = k*norm(cP_onTrack-trackPath(cPi,:));
-% da = d;
-% dd = 0;
-% dda = 0;
-%
-% while d < velDist
-%     if cPi+i+1 < length(trackPath)
-%         dd = norm(trackPath(cPi+i+1,:) - trackPath(cPi+i,:));
-%         d = d + dd;
-%         i = i+1;
-%     else
-%         d = velDist;
-%         i = i-1;
-%     end
-% end
-%
-% while da < aimDist
-%     if cPi+j+1 < length(trackPath)
-%         dd = norm(trackPath(cPi+j+1,:) - trackPath(cPi+j,:));
-%         da = da + dda;
-%         j = j+1;
-%     else
-%         da = aimDist;
-%         j = j-1;
-%     end
-% end
-%
-% h = (d - velDist)/dd;
-%
-% R = [cos(Psi) sin(Psi);
-%     -sin(Psi) cos(Psi)];
-%
-% aimPoint = (1-h)*trackPath(cPi+i,:) + h*trackPath(cPi+i-1,:);
-% P = R*((aimPoint-pos)');
 
-[Pv, globalPv] = getPoint(d,velDist,trackPath,cPi,Psi,pos);
-[Pa, globalPa] = getPoint(d,aimDist,trackPath,cPi,Psi,pos);
 
-aimPoints = zeros(2,1,2);
+[Pa, aimPoint] = getPoint(d,aimDist,trackPath,cPi,Psi,pos);
 
-aimPoints(:,1,1) = globalPv;
-aimPoints(:,1,2) = globalPa;
 headingRequest = atan2(Pa(2),Pa(1));
-velPoint = Pv;
 
 
-    function [localPoint, globalPoint] = getPoint(d,dist,trackPath,cPi,Psi,pos)
+[~,~,i20m] = getPoint(d,50,trackPath,cPi,Psi,pos);
+localPath = [cos(Psi) sin(Psi);-sin(Psi) cos(Psi)]*(trackPath(cPi:cPi+i20m,1:2)-pos)';
+
+    function [localPoint, globalPoint,i] = getPoint(d,dist,trackPath,cPi,Psi,pos)
         
         dd =0;
         i = 0;
@@ -121,6 +84,7 @@ velPoint = Pv;
             else
                 d = dist;
                 i = i-1;
+                dd = 1;
             end
         end
         
