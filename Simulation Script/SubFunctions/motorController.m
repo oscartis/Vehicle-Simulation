@@ -1,5 +1,5 @@
 function [TMotor] = motorController(accReq,x,yawRef,sampleTime,Iz,wRadius,m,Torque_pre,omega)
-gearRation = 16;
+gearRatio = 16;
 
 r = x(3);
 dr = x(6);
