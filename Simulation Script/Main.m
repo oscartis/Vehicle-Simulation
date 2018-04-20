@@ -4,12 +4,12 @@ InitializeModel;
 n = simTime/sampleTime+1;
 
 t = 0;
-i = 1;
+i = 2;
 
 x = zeros(6,n);
-x(:,1)      = [u0;0;0;0;0;0];
+x(:,2)      = [u0;0;0;0;0;0];
 X           = zeros(3,n);
-X(:,1)      = [X0;Y0;Psi0];
+X(:,2)      = [X0;Y0;Psi0];
 xDot        = zeros(6,n);
 phi         = zeros(1,n);
 phiDot      = phi;
@@ -32,6 +32,12 @@ spin = 0;
 omega = u0/wRadius*[1;1;1;1];
 Torque = zeros(4,n);
 
+%% Controller
+state_del   = zeros(3,n);
+del_opt     = zeros(Nh,n);
+state_a     = zeros(2,n);
+a_opt       = zeros(Nh,n);
+
 %%
 
 while t  <= simTime
@@ -43,10 +49,11 @@ while t  <= simTime
     r_ref(i)    = ...
         yawModel(headingRequest(i),x(:,i));
     
-    delta(:,i)  = ...
-       steerRef(r_ref(i),x(:,i),L,Ku,m);
-    
-    if abs(x(3,i)) > 1
+   [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i) ] = ...
+       MPC_steering(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc, ...
+       q,state_del(:,i-1),Nh,r_ref(i),del_opt(:,i),delta(:,i-1));
+
+   if abs(x(3,i)) > 1
         spin = 1;
     elseif abs(x(3,i)) < 0.2
         spin = 0;

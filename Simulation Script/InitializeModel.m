@@ -18,7 +18,7 @@ Psi0        = atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 25;               % Simulation end time [s]
+simTime     = 35;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -92,3 +92,9 @@ tireForceY = -tireDataY(2:end,2:end)*0.66;
 tireForceX = tireDataX(2:end,2:end)*0.66;
 
 disp('Vehicle data loaded');
+
+%% Controller
+
+q = 10;
+rc = 15;
+Nh = 5;
