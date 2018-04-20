@@ -47,7 +47,7 @@ if acc_req >=0
     Torque_dot = a_opt(1)+ Torque_dot_previous;
     
     Torque_req = Torque_req_previous + [0;0;1;1]*Torque_dot*sampleTime/2 ;
-    Torque_req = max(min(Torque_req,[0;0;24*G_ratio;24*G_ratio]),-[0;0;24*G_ratio;24*G_ratio]);
+    Torque_req = min(Torque_req,[0;0;24*G_ratio;24*G_ratio]);
     
 else
     Torque_dot = 0;
