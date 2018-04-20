@@ -19,13 +19,20 @@ delta       = zeros(4,n);
 alpha       = delta;
 
 headingRequest  = phi;
-accelerationRequest = zeros(1,n);
+
+accelerationRequest = [5,zeros(1,n-1)];
 aimPoint        = zeros(2,n);
 
 Fy          = delta;
 Fx          = delta;
 preFx       = zeros(4,1);
 Fz          = delta;
+state_del   = zeros(3,n);
+del_opt     = zeros(Nh,n);
+state_a     = zeros(2,n);
+a_opt       = zeros(Nh,n);
+r_ref       = zeros(n,1);
+Torque      = delta;
 
 %% Controller parameters
 
@@ -40,37 +47,34 @@ a_opt       = zeros(Nh,n);
 wheelLiftOffFlag = zeros(1,n);
 spin = 0;
 omega = u0/wRadius*[1;1;1;1];
-Torque = zeros(4,n);
 
-%% Controller
-state_del   = zeros(3,n);
-del_opt     = zeros(Nh,n);
-state_a     = zeros(2,n);
-a_opt       = zeros(Nh,n);
-
+Torque_req      = delta;
+Torque_dot  = zeros(n,1);
+Torque_req(:,1) = [0;0;1;1]*0.01*9.81*m;
 %%
 
 while t  <= simTime
     
-    [headingRequest(i), localPath, aimPoint(:,i)] = ...
-        genAimPoint(X(:,i),x(:,i),trackPath);
-    
+
+   [headingRequest(i), localPath, aimPoint(:,i)] = ...
+       genAimPoint(X(:,i),x(:,i),trackPath);
+
     
     r_ref(i)    = ...
-        yawModel(headingRequest(i),x(:,i));
+         yawModel(headingRequest(i),x(:,i));
     
-    %     delta(:,i)  = ...
-    %        steerRef(r_ref(i),x(:,i),L,Ku,m);
-    [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i) ] = ...
-        MPC_steering(Fz(:,i), x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q, ...
-        state_del(:,i-1),Nh,r_ref(i),del_opt(:,i),delta(:,i-1));
+%       delta(:,i)  = ...
+%          steerRef(r_ref(i),x(:,i),L,Ku,m);
+
+       [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i) ] = MPC_steering(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i),del_opt(:,i),delta(:,i-1));
     
-    if abs(x(3,i)) > 1
+   if abs(x(3,i)) > 1
         spin = 1;
     elseif abs(x(3,i)) < 0.2
         spin = 0;
     end
     
+
     [Fz(:,i), phiDDot(i), wheelLiftOffFlag(i)] = ...
         loadTransfer(x(:,i),phi(i),phiDot(i),m, ms, Ixx, hp, kLambda, kPhi, cLambda, ...
         cPhi, g, h2, h1, h0, h, w, L,l,A, Cd, Cl, rho);
@@ -79,15 +83,19 @@ while t  <= simTime
         getAccReq(x(1,i), velocityLimit, lateralAccelerationLimit, ...
         accelerationLimit, decelerationLimit, headingRequest(i), ...
         headingErrorDependency, localPath');
+
+
+    [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));  
+    [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i-1),omega,Torque_dot(i));
     
-    [Torque(:,i+1)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i),omega);
     [FxBrakes] = brakes(accelerationRequest(i),m);
     
     [Fx(:,i), omega] = ...
-        longitudinalControl(Torque(i+1), x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
-    
+        longitudinalControl(Torque(:,i), x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
+        
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
+%     Fx(:,i) = [0;0;0;0];
     
     [Fy(:,i), alpha(:,i), Ku]  = ...
         tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY);

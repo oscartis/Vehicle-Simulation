@@ -10,15 +10,16 @@ u0          = 5;          % Longitudinal Speed [m/s]
 trackPath   = load('trackReconstructed.mat');
 trackPath   = trackPath.trackReconstructed;
 
+
 X0          = trackPath(1,1); 
 Y0          = trackPath(1,2);
 X1          = trackPath(10,1); 
 Y1          = trackPath(10,2);
-Psi0        = atan2(X1-X0,Y1-Y0);
+Psi0        = 3;%-1.0931;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 35;               % Simulation end time [s]
+simTime     = 50;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -29,6 +30,7 @@ l2      = l1-L;                 % Distance from COG to rear axle [m]
 l       = [l1;l1;l2;l2];
 w       = [1.25;-1.25;1.2;-1.2]/2;  % Track width [m]
 wRadius = 0.22;
+G_ratio = 16;
 m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
 Ixx     = 30.031;                  % Vehicle inertia about X axis
@@ -69,7 +71,6 @@ headingErrorDependency = 0.4;
 
 %% Cornering stiffness
 Fz = m*g*[-l2;-l2;l1;l1]/(2*L);
-
 Ca = 2e-15*(Fz).^6 -2e-11*(Fz).^5 + 5e-8*(Fz).^4 ... 
     - 6e-5*(Fz).^3 + 0.0066*(Fz).^2 + 53.121*(Fz) + 2.9346;
 
@@ -95,10 +96,10 @@ tireForceX2 = -tireForceX1;
 
 tireForceX = cat(1,tireForceX1,sort(tireForceX2));
 tireForceY = cat(1,tireForceY1,sort(tireForceY2));
-
 disp('Vehicle data loaded');
 
-%% Controller
+
+%% Controller parameters
 
 q = 10;
 rc = 15;
