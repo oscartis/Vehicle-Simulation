@@ -27,6 +27,16 @@ Fx          = delta;
 preFx       = zeros(4,1);
 Fz          = delta;
 
+%% Controller parameters
+
+q = 10;
+rc = 15;
+Nh = 5;
+state_del   = zeros(3,n);
+del_opt     = zeros(Nh,n);
+state_a     = zeros(2,n);
+a_opt       = zeros(Nh,n);
+
 wheelLiftOffFlag = zeros(1,n);
 spin = 0;
 omega = u0/wRadius*[1;1;1;1];
@@ -42,18 +52,20 @@ a_opt       = zeros(Nh,n);
 
 while t  <= simTime
     
-   [headingRequest(i), localPath, aimPoint(:,i)] = ...
-       genAimPoint(X(:,i),x(:,i),trackPath);
-
+    [headingRequest(i), localPath, aimPoint(:,i)] = ...
+        genAimPoint(X(:,i),x(:,i),trackPath);
+    
     
     r_ref(i)    = ...
         yawModel(headingRequest(i),x(:,i));
     
-   [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i) ] = ...
-       MPC_steering(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc, ...
-       q,state_del(:,i-1),Nh,r_ref(i),del_opt(:,i),delta(:,i-1));
-
-   if abs(x(3,i)) > 1
+    %     delta(:,i)  = ...
+    %        steerRef(r_ref(i),x(:,i),L,Ku,m);
+    [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i) ] = ...
+        MPC_steering(Fz(:,i), x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q, ...
+        state_del(:,i-1),Nh,r_ref(i),del_opt(:,i),delta(:,i-1));
+    
+    if abs(x(3,i)) > 1
         spin = 1;
     elseif abs(x(3,i)) < 0.2
         spin = 0;
@@ -73,7 +85,7 @@ while t  <= simTime
     
     [Fx(:,i), omega] = ...
         longitudinalControl(Torque(i+1), x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
-        
+    
     Fx(:,i) =  ...
         Fx(:,i)*(1-spin);
     

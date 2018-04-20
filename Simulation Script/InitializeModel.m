@@ -88,8 +88,13 @@ tireLoad = -tireLoad;
 
 tireSlipY = tireDataY(2:end,1)*pi/180;
 tireSlipX = tireDataX(2:end,1);
-tireForceY = -tireDataY(2:end,2:end)*0.66;
-tireForceX = tireDataX(2:end,2:end)*0.66;
+tireForceY1 = -tireDataY(2:26,2:end);
+tireForceY2 = -tireForceY1;
+tireForceX1 = tireDataX(2:11,2:end);
+tireForceX2 = -tireForceX1;
+
+tireForceX = cat(1,tireForceX1,sort(tireForceX2));
+tireForceY = cat(1,tireForceY1,sort(tireForceY2));
 
 disp('Vehicle data loaded');
 
