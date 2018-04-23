@@ -7,6 +7,7 @@ t = 0;
 i = 2;
 
 x = zeros(6,n);
+x(1,1)      = u0;
 x(:,2)      = [u0;0;0;0;0;0];
 X           = zeros(3,n);
 X(:,2)      = [X0;Y0;Psi0];
@@ -69,10 +70,10 @@ while t  <= simTime
     [accelerationRequest(i)] = ...
         getAccReq(x(1,i), velocityLimit, lateralAccelerationLimit, ...
         accelerationLimit, decelerationLimit, headingRequest(i), ...
-        headingErrorDependency, localPath');
+        headingErrorDependency, localPath',x(:,i));
 
-    [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));  
-    [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i-1),omega,Torque_dot(i));
+%     [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));  
+    [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i-1),omega,Torque_dot(i),rho,A,Cd);
     
     [FxBrakes] = brakes(accelerationRequest(i),m);
     

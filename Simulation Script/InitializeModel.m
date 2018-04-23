@@ -7,15 +7,15 @@ close all;
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
 u0          = 5;          % Longitudinal Speed [m/s]
 
-trackPath   = load('trackReconstructed.mat');
-trackPath   = trackPath.trackReconstructed;
+trackPath   = load('TrackPath_smooth.mat');
+trackPath   = trackPath.TrackPath_smooth;
 
 
 X0          = trackPath(1,1); 
 Y0          = trackPath(1,2);
 X1          = trackPath(10,1); 
 Y1          = trackPath(10,2);
-Psi0        = 3;%-1.0931;%atan2(X1-X0,Y1-Y0);
+Psi0        = 1.2;%atan2(X1-X0,Y1-Y0);
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
