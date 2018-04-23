@@ -1,6 +1,6 @@
 function [Torque_dot,Torque_req,state_a,a_opt] = MPC_velocity(x,x_1,m,sampleTime,wRadius,G_ratio,Nh,r,q,state_a_previous,a_opt_previous,Torque_req_previous,acc_req,Torque_dot_previous)
 
-if acc_req >=0
+if acc_req >0
     
     a_ref = zeros(Nh,1);
     a_ref(1:Nh,1) = acc_req;
@@ -39,7 +39,7 @@ if acc_req >=0
         end
     end
     
-    R = r*eye(Nh);
+    R = r*eye(Nh)*100;
     Q_new = q*eye(Nh);
     
     state_a = M*state_a_previous+L*(a-Q*state_a_previous)+N*a_opt_previous(1);

@@ -1,4 +1,4 @@
-function [Fx,omega] = longitudinalControl(Torque,x, Fz, FxBrakes,Iyw,omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius)
+function [Fx,omega,slip] = longitudinalControl(Torque,x, Fz, FxBrakes,Iyw,omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius)
 u = x(1);
 
 slip = [0;0;0;0];

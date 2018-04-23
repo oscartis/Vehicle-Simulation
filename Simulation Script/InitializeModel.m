@@ -7,8 +7,11 @@ close all;
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
 u0          = 5;          % Longitudinal Speed [m/s]
 
-trackPath   = load('trackReconstructed.mat');
-trackPath   = trackPath.trackReconstructed;
+trackPath   = load('TrackPath_smooth.mat');
+trackPath   = trackPath.TrackPath_smooth;
+
+Rad = load('Curvature.mat');
+Rad = Rad.K;
 
 
 X0          = trackPath(1,1); 

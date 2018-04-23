@@ -19,7 +19,7 @@ delta       = zeros(4,n);
 alpha       = delta;
 
 headingRequest  = phi;
-accelerationRequest = [5,zeros(1,n-1)];
+accelerationRequest = zeros(1,n);
 aimPoint        = zeros(2,n);
 
 Fy          = delta;
@@ -38,7 +38,6 @@ spin = 0;
 omega = u0/wRadius*[1;1;1;1];
 Torque_req      = delta;
 Torque_dot  = zeros(n,1);
-Torque_req(:,1) = [0;0;1;1]*0.01*9.81*m;
 %%
 
 while t  <= simTime
@@ -57,8 +56,10 @@ while t  <= simTime
     
    if abs(x(3,i)) > 1
         spin = 1;
+       
     elseif abs(x(3,i)) < 0.2
         spin = 0;
+       
     end
     
     
@@ -69,14 +70,14 @@ while t  <= simTime
     [accelerationRequest(i)] = ...
         getAccReq(x(1,i), velocityLimit, lateralAccelerationLimit, ...
         accelerationLimit, decelerationLimit, headingRequest(i), ...
-        headingErrorDependency, localPath');
+        headingErrorDependency, localPath',x(:,i));
 
-    [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));  
-    [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i-1),omega,Torque_dot(i));
+%      [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));  
+    [Torque(:,i)] = motorController(Fz(:,i),accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i-1),omega,Torque_req(:,i),rho,A,Cd);
     
     [FxBrakes] = brakes(accelerationRequest(i),m);
     
-    [Fx(:,i), omega] = ...
+    [Fx(:,i), omega, slip(:,i)] = ...
         longitudinalControl(Torque(:,i), x(:,i), Fz(:,i), FxBrakes, Iyw, omega,sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
         
     Fx(:,i) =  ...
