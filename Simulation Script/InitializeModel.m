@@ -94,8 +94,8 @@ tireForceY2 = -tireForceY1;
 tireForceX1 = tireDataX(2:11,2:end);
 tireForceX2 = -tireForceX1;
 
-tireForceX = cat(1,tireForceX1,sort(tireForceX2));
-tireForceY = cat(1,tireForceY1,sort(tireForceY2));
+tireForceX = [tireForceX1;flipud(tireForceX2)];
+tireForceY = [tireForceY1;flipud(tireForceY2)];
 disp('Vehicle data loaded');
 
 
