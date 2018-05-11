@@ -1,0 +1,46 @@
+clear all
+close all
+load recordings.mat
+
+LW = 3;
+FS = 20;
+aspectRatio = [16 10]*70;
+plotTorque = false;
+plotMaxTorque =true;
+
+if plotTorque
+    figure('Position',[0.5, 0.5 , aspectRatio]);
+    
+    span = (650:780);
+    hMotorTorque = plot(signals.time(span)-signals.time(span(1)),signals.pe_motorTorque_RL(span));
+    hold on
+    hMotorTorqueSet = plot(signals.time(span)-signals.time(span(1)),signals.rn_motorTorqueSet_RL(span),'--');
+    
+    set(gca,'XLim',[signals.time([span(1) span(end)])-signals.time(span(1))])
+    set(hMotorTorque,'LineWidth',LW,'color','k')
+    set(hMotorTorqueSet,'LineWidth',LW,'color','k')
+    
+    
+    xlabel('Time [s]')
+    ylabel('Torque [Nm]')
+    legend('Motor torque','Torque request')
+    
+    set(gca,'FontSize',FS)
+end
+
+if plotMaxTorque
+    figure('Position',[0.5, 0.5 , aspectRatio]);
+    
+    hMaxMotorTorque = plot(signals.time(span)-signals.time(span(1)),signals.pe_motorTorque_RL(span));
+    hold on
+    
+    set(gca,'XLim',[signals.time([span(1) span(end)])-signals.time(span(1))])
+    set(hMaxMotorTorque,'LineWidth',LW,'color','k')
+    
+    
+    xlabel('Time [s]')
+    ylabel('Torque [Nm]')
+    legend('Motor torque','Torque request')
+    
+    set(gca,'FontSize',FS)
+end

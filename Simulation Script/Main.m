@@ -86,7 +86,7 @@ while t  <= simTime
 
 
     [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));  
-    [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),r_ref(i),sampleTime,Izz,wRadius,m,Torque(:,i-1),omega,Torque_req(:,i));
+    [Torque(:,i)] = motorController(sampleTime,Torque(:,i-1),omega,Torque_req(:,i));
     
     [FxBrakes] = brakes(accelerationRequest(i),m);
     

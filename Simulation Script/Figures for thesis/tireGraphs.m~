@@ -6,8 +6,8 @@ plotFx = false;
 plotFy = true;
 plotMu = true;
 plotAy = true;
-figureFactor = 70;
-aspectRatio = [16 10]*figureFactor;
+figureFactor = 150;
+aspectRatio = [16 10]*50;
 
 if plotFx || plotFy
     lineColors = flipud(jet(length(tireLoad)));

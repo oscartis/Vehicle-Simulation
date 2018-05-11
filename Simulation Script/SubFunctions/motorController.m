@@ -1,12 +1,11 @@
-
-function [TMotor] = motorController(accReq,x,yawRef,sampleTime,Iz,wRadius,m,Torque_pre,omega,Torque_req)
+function [TMotor] = motorController(sampleTime,Torque_pre,omega,Torque_req)
 
 motorSpeed = omega*16;
 
 % Add torque vectoring
 T_error = Torque_req-Torque_pre;     % Change from last time step
 
-dT_max =50*sampleTime ;  % Maximum change motors can produce in one time step
+dT_max = 85.6*sampleTime ;  % Maximum change motors can produce in one time step
 
 TMotor = Torque_pre + min(max(T_error,-dT_max),dT_max);  % Calc torque
 
