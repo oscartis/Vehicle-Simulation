@@ -60,13 +60,13 @@ while t  <= simTime
         accelerationRequest(i) = (targetSpeed-x(1,i))/sampleTime;
         Rad(i) = x(1,i)/r_ref(i,1);
     else
-        [headingRequest(i), localPath, aimPoint(:,i),d(i), cPi, cP_onTrack(i,:),curveRadius] = ...
+        [headingRequest(i), localPath, aimPoint(:,i),d, cPi, cP_onTrack,curveRadius] = ...
             genAimPoint(X(:,i),x(:,i),trackPath);
         
         [r_ref(i,:),Rad(i)]    = ...
             yawModel(headingRequest(i),x(:,i),Nh,CR(:,i),i);
     
-        if ifDLC && X(1,i) > 0
+        if ifDLC || X(1,i) > 0
             accelationRequest = 0;
         else
         
@@ -141,15 +141,10 @@ while t  <= simTime
         i = i+1;
     end
 
-    if mod(round(t/sampleTime)/simTime*sampleTime*100,5) < 1e-5 %|| abs(mod(t/simTime*100,5)) >5-1e-5
+    if abs(mod(t/simTime*100,5)) < 1e-5 || abs(mod(t/simTime*100,5)) >5
         fprintf('Running: %2.1f%%\n',t/simTime*100)
     end
-
-    if t>10 && trackPath(cPi,1) == trackPath(1,1) && trackPath(cPi,2) == trackPath(1,2) && d(i)<0 && var ==0
-         Laptime = Laptime_calculator(cP_onTrack,t,d,i,sampleTime,cPi,trackPath);
-        var=1;
-     end
-
+    
     t = t + sampleTime;
 end
 

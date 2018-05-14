@@ -2,8 +2,7 @@ function [headingRequest, localPath, aimPoint, d, cPi, cP_onTrack,curveRadius]= 
 
 u = x(1);
 
-localDist = u;
-aimDist = 5;
+aimDist = u;
 
 pos = X(1:2)';
 Psi = X(3);
@@ -60,8 +59,7 @@ end
 
 trackCopy = trackPath;
 p2carDist = 0;
-trackCarFrame = [cos(-Psi), -sin(-Psi);sin(-Psi), cos(-Psi)]*(trackPath-pos)';
-angle2point = atan2(trackCarFrame(2,:),trackCarFrame(1,:));
+angle2point = atan2((trackPath(:,2)-pos(2)),trackPath(:,1)-pos(-Psi;
 idxBehind = find(angle2point>pi/4 | angle2point < -pi/4);
 trackCopy(idxBehind,:) = [];
 dist = [];
@@ -70,12 +68,12 @@ for i = 1:length(trackCopy)
     dist(i) = norm(trackCopy(i,:)-pos);
     pdist(i) = (norm(trackCopy(i,:)-cP_onTrack));
 end
+[~,pidx] = min(pdist);
 trackCopy(dist>20,:) =[];
 pdist(dist>20) = [];
-[~,pidx] = min(pdist);
 localPath = [];
 
-while p2carDist < localDist
+while p2carDist < u
     tmpPoint = trackCopy(pidx,:);
     trackCopy(pidx,:) = [];
     pdist(pidx) = [];

@@ -1,4 +1,4 @@
-function [accelerationRequest,DMVelocity] = getAccReq(currentVelocity, velocityLimit, lateralAccelerationLimit,accelerationLimit, decelerationLimit, headingRequest, headingErrorDependency, localPath)
+function [accelerationRequest,DMVelocity] = getAccReq(currentVelocity, velocityLimit, lateralAccelerationLimit,accelerationLimit, decelerationLimit, headingRequest, headingErrorDependency, localPath,curveRadius)
 %driverModelVelocity_v2 calculates the desired acceleration of the CFSD18
 %vehicle.
 %
@@ -19,26 +19,7 @@ function [accelerationRequest,DMVelocity] = getAccReq(currentVelocity, velocityL
 % - First radius is calculated at 2nd path point
 % - Last radius is calculated at 2nd to last path point
 % Note! 3 points in a row gives infinate radius.
-triRes = 50;
-curveRadius = zeros(1,length(localPath)-(triRes+1)*2);
-for k = (triRes+1):length(localPath)-(triRes+1)
-    % Choose three points and make a triangle with sides
-    % A(p1p2),B(p2p3),C(p1p3)
-    A = norm(localPath(k,:)-localPath(k-4,:));
-    B = norm(localPath(k,:)-localPath(k+4,:));
-    C = norm(localPath(k-4,:)-localPath(k+4,:));
-    % Calculate triangle area
-    S = (A+B+C)/2; % Heron's formula
-    triangleArea = sqrt(S*(S-A)*(S-B)*(S-C));
-    
-    % Infinate radius check - Check if needed in C++! (not needed in MatLab that can handle inf)
-    if triangleArea == 0
-        curveRadius(k-(triRes)) = 5000; % Large value
-    else
-        % Calculate the radius of the circle that matches the points
-        curveRadius(k-(triRes)) = (A*B*C)/(4*triangleArea);
-    end
-end
+
 
 % Set velocity candidate based on expected lateral acceleration
 %(remember to add safe zone)
@@ -52,7 +33,7 @@ while all(~accOK)
     for k = length(velocityCandidate):-1:2
         while ~accOK(k-1)
             % Distance between considered path points
-            pointDistance = norm(localPath(k+1,:)-localPath(k,:));
+            pointDistance = norm(localPath(k,:)-localPath(k-1,:));
             % Time between points if using averaged velocity
             timeBetweenPoints = pointDistance/((velocityCandidate(k)+velocityCandidate(k-1))/2);
             % Requiered acceleration to achieve velocity of following point from previous point
@@ -74,8 +55,8 @@ while all(~accOK)
                 else
                     % This case shouldn't occur, only here as fail safe.
                 end
-               % timeBetweenPoints = pointDistance/((velocityCandidate(k)+velocityCandidate(k-1))/2);
-                requieredAcceleration = (velocityCandidate(k)-velocityCandidate(k-1))/(2*pointDistance);
+                timeBetweenPoints = pointDistance/((velocityCandidate(k)+velocityCandidate(k-1))/2);
+                requieredAcceleration = (velocityCandidate(k)-velocityCandidate(k-1))/timeBetweenPoints;
                 % Calculate new required acceleration
             end
             

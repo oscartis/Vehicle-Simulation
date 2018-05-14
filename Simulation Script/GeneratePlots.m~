@@ -16,8 +16,8 @@ r       = x(3,:);
 ax      = x(4,:);
 ay      = x(5,:);
 rDot    = x(6,:);
-aimPointG = [(cos(Psi).*(aimPoint(1,:)) - sin(Psi).*(aimPoint(2,:)))+X; ...
-    sin(Psi).*(aimPoint(1,:)) + cos(Psi).*(aimPoint(2,:))+Y];
+aimPoint = [cos(Psi).*(aimPoint(1,:)+X) - sin(Psi)*(aimPoint(2,:)+Y), ...
+    sin(Psi)*(aimPoint(1,:)+X) + cos(Psi)*(aimPoint(2,:)+Y)];
 
 %% Vehicle travel animation
 fsize = get(groot,'ScreenSize');
@@ -34,7 +34,7 @@ hTrack = plot(trackPath(:,1),trackPath(:,2),'k');
 hTitle=title(sprintf('Time = %.1f',t(1)));
 hold on;
 hTrajectory = plot(X(1),Y(1),'r--','LineWidth',5);
-hAimPoint = plot(aimPointG(:,1),aimPointG(:,2),'xb');
+hAimPoint = plot(aimPoint(:,1),aimPoint(:,2),'xb');
 axis equal;
 xlim([min(X)-10 max(X)+10])
 ylim([min(Y)-10 max(Y)+10])
@@ -82,7 +82,7 @@ for i = 1:5:length(Psi)
     tic
     set(hTrajectory,'XData',X(1:i),'YData',Y(1:i))
     set(hCar,'Xdata',X(i)+[X1(i) X2(i) X3(i) X4(i)], 'Ydata',Y(i)+[Y1(i) Y2(i) Y3(i) Y4(i)]);
-    set(hAimPoint,'Xdata',aimPointG(1,i),'Ydata',aimPointG(2,i))
+    set(hAimPoint,'Xdata',aimPoint(1,i),'Ydata',aimPoint(2,i))
     set(hTitle,'String',sprintf('Time= %0.1f',t(i)));
     
     set(hbar,'YData',u(i)*3.6)                  % Tacometer

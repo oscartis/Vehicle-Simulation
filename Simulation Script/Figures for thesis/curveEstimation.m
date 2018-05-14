@@ -1,4 +1,5 @@
-DoP = 0;
+function [localPath] = curveEstimation(localPath)
+DoP = 80;
 if DoP < 1 || mod(DoP,1) ~= 0
     error('Invalid DoP')
 end 
@@ -36,3 +37,4 @@ else
 end
 
 curveRadius = ((1+yDot.^2).^(3/2))./(abs(yDDot));
+end
