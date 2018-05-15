@@ -22,11 +22,11 @@ ifSWD = false;
 if ifSWD
     load yawRateReference.mat;
 end
-targetSpeed = 120/3.6;
+targetSpeed = 50/3.6;
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 30;               % Simulation end time [s]
+simTime     = 120;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]

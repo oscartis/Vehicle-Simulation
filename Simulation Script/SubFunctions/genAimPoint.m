@@ -87,7 +87,6 @@ while p2carDist < localDist
     localPath = [localPath;tmpPoint];
     
     if min(tmpDist) > 2
-        disp('Hoiasdhsa')
         break;
     end
 end

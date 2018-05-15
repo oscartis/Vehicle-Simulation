@@ -45,6 +45,8 @@ spin = 0;
 omega = delta;
 omega(:,2) = u0/wRadius*[1;1;1;1];
 latDeviation = phi;
+d = zeros(n,1);
+var = 0;
 %%
 
 while t  <= simTime
