@@ -175,4 +175,4 @@ rDot    = x(6,:);
 
 t = (0:sampleTime:simTime);
 
-%GeneratePlots;
+GeneratePlots;

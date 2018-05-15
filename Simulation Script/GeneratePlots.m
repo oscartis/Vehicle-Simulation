@@ -44,9 +44,9 @@ axis manual;
 xlabel('X [m]')
 ylabel('Y [m]')
 
-l1t = l1*5;
-l2t = l2*5;
-wt = w*5;
+l1t = l1;
+l2t = l2;
+wt = w;
 
 X1 =  l1t*cos(Psi) - wt(1)*sin(Psi);
 X2 =  l1t*cos(Psi) - wt(2)*sin(Psi);

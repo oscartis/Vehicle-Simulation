@@ -5,7 +5,7 @@ clear all;
 close all;
 
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
-u0          = 15;          % Longitudinal Speed [m/s]
+u0          = 5;          % Longitudinal Speed [m/s]
 
 trackPath   = load('TrackPath_smooth.mat');
 trackPath   = trackPath.TrackPath_smooth;
@@ -22,11 +22,11 @@ ifSWD = false;
 if ifSWD
     load yawRateReference.mat;
 end
-targetSpeed = 70/3.6;
+targetSpeed = 120/3.6;
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 15;               % Simulation end time [s]
+simTime     = 30;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
@@ -62,7 +62,7 @@ g       = 9.81;                 % Acceleration due to gravity
 
 
 %%
-velocityLimit = 100/3.6;
+velocityLimit = 80/3.6;
 lateralAccelerationLimit = 1*g;
 accelerationLimit = 1*g;
 decelerationLimit = -g;

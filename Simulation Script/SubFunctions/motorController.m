@@ -24,5 +24,5 @@ maxTorque(~breakSpeed) = 24*(2e4-motorSpeed(~breakSpeed)*30/pi)/1e4;
 maxTorque(motorSpeed(3:4) > 20e3*pi/30) = maxTorque(motorSpeed(3:4) > 20e3*pi/30)*0;
 maxTorque = [0;0;maxTorque*16];
 
-TMotor = max(min(TMotor,maxTorque),-maxTorque);
+TMotor = max(min(TMotor,maxTorque),0);
 end

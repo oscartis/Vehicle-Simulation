@@ -13,11 +13,14 @@ if u == 0
     slip(omega == 0) = 0;
     slip(omega ~= 0) = sign(omega(omega~=0))*1;
 else
-    slip = (omega*wRadius-u)/abs(u);
+    slip(omega>=0) = (omega(omega>=0)*wRadius-u)/abs(u);
+    slip(omega<0) = (-omega(omega<0)*wRadius+u)/abs(u);    
 end
 
 
 Fx = Fz.*mu.*sin(C*atan(B.*slip - E*(B.*slip - atan(B.*slip))));
+
+FxBrakes = FxBrakes.*sign(omega);
 
 omegaDot = (Torque + wRadius*(-Fx + FxBrakes))/Iyw;
 omega = omega + omegaDot*sampleTime;
