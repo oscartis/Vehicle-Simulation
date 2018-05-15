@@ -1,4 +1,4 @@
-function [Fy, alpha, Ku] = tireModel(delta,x,l1, l2, w, Fz,Fx, tireLoad, tireSlip, tireForce)
+function [Fy, alpha, Ku] = tireModel(delta,x,l1, l2, w, Fz,Fx, tireLoad, tireSlip, tireForce,mu0,mu1,Fz0)
 %% load states
 
 u = x(1);
@@ -7,9 +7,6 @@ r = x(3);
 
 
 %% Friction coefficient
-Fz0     = 1500;
-mu0     = 2.1385;                    % Road tyre friction coefficient
-mu1     = -2.3862e-04;
 mu      = mu0*(1-mu1*(Fz-Fz0));
 
 

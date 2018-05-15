@@ -50,23 +50,23 @@ latDeviation = phi;
 while t  <= simTime
     
     if ifStepResponse
-        r_ref(i,:) = 0;
-        r_ref(i,(t+sampleTime*(1:Nh)>8)) = 1;
+        r_ref(i,:) = 0.5*(t>=8);
+        %    r_ref(i,(t+sampleTime*(1:Nh)>8)) = 1;
 
-        accelerationRequest(i) = (targetSpeed-x(1,i))/sampleTime;
+        accelerationRequest(i) = (targetSpeed-x(1,i));
         Rad(i) = x(1,i)/r_ref(i,1);
     elseif ifSWD
-        r_ref(i,:) = yawRateReference(i:i+Nh-1);
-        accelerationRequest(i) = (targetSpeed-x(1,i))/sampleTime;
+        r_ref(i,:) = yawRateReference(i);
+        accelerationRequest(i) = (targetSpeed-x(1,i));
         Rad(i) = x(1,i)/r_ref(i,1);
     else
-        [headingRequest(i), localPath, aimPoint(:,i),d, cPi, cP_onTrack,curveRadius] = ...
+        [headingRequest(i), localPath, aimPoint(:,i),d(i), cPi, cP_onTrack(i,:),curveRadius] = ...
             genAimPoint(X(:,i),x(:,i),trackPath);
         
         [r_ref(i,:),Rad(i)]    = ...
             yawModel(headingRequest(i),x(:,i),Nh,CR(:,i),i);
     
-        if ifDLC || X(1,i) > 0
+        if ifDLC && X(1,i) > 0
             accelationRequest = 0;
         else
         
@@ -83,15 +83,15 @@ while t  <= simTime
     
     %         [r_ref(i,:),HD(i,:)]= curveEst(localPath,x(:,i),sampleTime,Nh,X(:,i));
     
-    %       delta(:,i)  = ...
-    %          steerRef(r_ref(i),x(:,i),L,Ku,m);
+    delta(:,i)  = ...
+        steerRef(r_ref(i),x(:,i),L,Ku,m);
     
-    if Beta ==1
-        [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i) ] = MPC_steering1(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));    
-    else
-        [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i)] = MPC_steering2(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));
+%     if Beta ==1
+%         [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i) ] = MPC_steering1(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));    
+%     else
+%         [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i)] = MPC_steering2(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));
         
-    end
+%     end
     if abs(x(3,i)) > 1
         spin = 1;
     elseif abs(x(3,i)) < 0.2
@@ -104,14 +104,14 @@ while t  <= simTime
     [FxBrakes] = brakes(accelerationRequest(i),m);
     
     [Fx(:,i), omega(:,i+1)] = ...
-        longitudinalControl(Torque(:,i), x(:,i), Fz(:,i), FxBrakes, Iyw, omega(:,i),sampleTime,tireLoad,tireSlipX,tireForceX,wRadius);
+        longitudinalControl(Torque(:,i), x(:,i), Fz(:,i), FxBrakes, Iyw, omega(:,i),sampleTime,mu0,mu1,Fz0,wRadius);
     
     %     Fx(:,i) =  ...
     %         Fx(:,i)*(1-spin);
     %     Fx(:,i) = [0;0;0;0];
     
     [Fy(:,i), alpha(:,i), Ku]  = ...
-        tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY);
+        tireModel(delta(:,i),x(:,i),l1, l2, w, Fz(:,i),Fx(:,i),tireLoad,tireSlipY,tireForceY,mu0,mu1,Fz0);
     
     dx = ...
         motion(delta(:,i),Fy(:,i),Fx(:,i),m,Izz,l,w, x(:,i),sampleTime,rho,A,Cd);
@@ -141,10 +141,17 @@ while t  <= simTime
         i = i+1;
     end
 
-    if abs(mod(t/simTime*100,5)) < 1e-5 || abs(mod(t/simTime*100,5)) >5
+    if mod(round(t/sampleTime)/simTime*sampleTime*100,5) < 1e-5 %|| abs(mod(t/simTime*100,5)) >5-1e-5
         fprintf('Running: %2.1f%%\n',t/simTime*100)
     end
-    
+
+if ~ifStepResponse && ~ifDLC && ~ifSWD
+    if t>10 && trackPath(cPi,1) == trackPath(1,1) && trackPath(cPi,2) == trackPath(1,2) && d(i)<0 && var ==0
+         Laptime = Laptime_calculator(cP_onTrack,t,d,i,sampleTime,cPi,trackPath);
+        var=1;
+     end
+end
+
     t = t + sampleTime;
 end
 

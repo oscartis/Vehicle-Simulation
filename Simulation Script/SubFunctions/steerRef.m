@@ -1,6 +1,6 @@
 function delta= steerRef(r_ref,x,L,Ku,m)
 maxDelta = pi/6;
-
+Ku = 0;
 %k = 0.8;
 u = x(1);
 %v = x(5);
