@@ -26,7 +26,7 @@ ylabel('Yaw Rate [rad/s]')
 
 legend('Yaw rate','Yaw rate reference')
 
-strSpeed = sprintf('Speed = %i m/s',round(mean(wB.u(100:end))));
+strSpeed = sprintf('Speed = %i km/h',round(mean(wB.u(100:end))*3.6));
 text(xlim(1)+0.55*(xlim(2)-xlim(1)),ylim(1)+0.85*(ylim(2)-ylim(1)),strSpeed,'FontSize',FS)
 
 set(gca,'FontSize',FS)
@@ -47,7 +47,6 @@ ylabel('Yaw Rate [rad/s]')
 
 legend('Yaw rate','Yaw rate reference')
 
-strSpeed = sprintf('Speed = %i m/s',round(mean(woB.u(100:end))));
 text(xlim(1)+0.55*(xlim(2)-xlim(1)),ylim(1)+0.85*(ylim(2)-ylim(1)),strSpeed,'FontSize',FS)
 
 set(gca,'FontSize',FS)

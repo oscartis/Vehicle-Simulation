@@ -5,7 +5,7 @@ clear all;
 close all;
 
 %% %%% Test case definiton %%%%%%%%%%%%%%%%%%%%%%%%%%
-u0          = 5;          % Longitudinal Speed [m/s]
+u0          = 15;          % Longitudinal Speed [m/s]
 
 trackPath   = load('TrackPath_smooth.mat');
 trackPath   = trackPath.TrackPath_smooth;
@@ -18,21 +18,21 @@ Psi0        = atan2(Y1-Y0,X1-X0);
 
 ifStepResponse = false;
 ifDLC = false;
-ifSWD = true;
+ifSWD = false;
 if ifSWD
     load yawRateReference.mat;
 end
-targetSpeed = 60/3.6;
+targetSpeed = 70/3.6;
 
 %% %%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%
 sampleTime  = .01;             % Simulation Step Size [s]
-simTime     = 14.5;               % Simulation end time [s]
+simTime     = 15;               % Simulation end time [s]
 
 %% %%% Car parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 m       = 217.4;                % Mass [kg]
 Izz     = 133.32;                  % Moment of inertia about z axis [kgm^2]
 L       = 1.53;                 % Wheelbase [m]
-l1      = 0.55*L;               % Distance from COG to front axle [m]
+l1      = 0.544*L;               % Distance from COG to front axle [m]
 l2      = l1-L;                 % Distance from COG to rear axle [m]
 l       = [l1;l1;l2;l2];
 w       = [1.25;-1.25;1.2;-1.2]/2;  % Track width [m]
@@ -42,14 +42,14 @@ m_us    = 28;
 ms      = m-m_us;               % Sprung mass [kg]
 Ixx     = 30.031;                  % Vehicle inertia about X axis
 Iyw     = 2;
-cPhi    = (2.2300e+04 + 1.7997e+04);                  % Vehicle total roll stiffness
-kPhi    = 0;                 % Vehicle total roll damping
-cLambda = 0.5534;                 % Vehcile roll stiffness distribution
+cPhi    = (4.2433e4);                  % Vehicle total roll stiffness
+kPhi    = 0;                    % Vehicle total roll damping
+cLambda = 0.4725;               % Vehcile roll stiffness distribution
 kLambda = 0.57;                 % Vehicle roll damping distribution
 
-h       = 0.282;                % Height of CoG
-h1      = 0.040;                % Front roll center height
-h2      = 0.093;                % Rear roll center height
+h       = 0.280;                % Height of CoG
+h1      = 0.0402;                % Front roll center height
+h2      = 0.094;                % Rear roll center height
 h0      = h - (l1*h2 - l2*h1)/L;
 % Height of CoG above roll axis
 hp      = h + 0.15;
@@ -104,7 +104,7 @@ disp('Vehicle data loaded');
 %% Controller parameters
 
 Nh = 5;
-Beta = 0;
+Beta = 1;
 
 if Beta ==0
     q = 40;

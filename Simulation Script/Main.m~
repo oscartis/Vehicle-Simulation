@@ -56,7 +56,7 @@ while t  <= simTime
         accelerationRequest(i) = (targetSpeed-x(1,i));
         Rad(i) = x(1,i)/r_ref(i,1);
     elseif ifSWD
-        r_ref(i,:) = yawRateReference(i);
+        r_ref(i,:) = yawRateReference(i)*2;
         accelerationRequest(i) = (targetSpeed-x(1,i));
         Rad(i) = x(1,i)/r_ref(i,1);
     else
@@ -66,8 +66,9 @@ while t  <= simTime
         [r_ref(i,:),Rad(i)]    = ...
             yawModel(headingRequest(i),x(:,i),Nh,CR(:,i),i);
     
-        if ifDLC && X(1,i) > 0
-            accelationRequest = 0;
+        if ifDLC 
+            accelerationRequest(i) = (targetSpeed-x(1,i));
+           
         else
         
         [accelerationRequest(i)] = ...
@@ -83,15 +84,15 @@ while t  <= simTime
     
     %         [r_ref(i,:),HD(i,:)]= curveEst(localPath,x(:,i),sampleTime,Nh,X(:,i));
     
-    delta(:,i)  = ...
-        steerRef(r_ref(i),x(:,i),L,Ku,m);
+%     delta(:,i)  = ...
+%         steerRef(r_ref(i,1),x(:,i),L,Ku,m);
     
-%     if Beta ==1
-%         [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i) ] = MPC_steering1(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));    
-%     else
-%         [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i)] = MPC_steering2(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));
+    if Beta ==1
+        [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i) ] = MPC_steering1(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));    
+    else
+        [delta(:,i),state_del(:,i),del_opt(:,i),eig_A(:,i),Mz(i)] = MPC_steering2(Fz(:,i),x(:,i),x(:,i-1),m,l1,-l2,Izz,sampleTime,rc,q,state_del(:,i-1),Nh,r_ref(i,:),del_opt(:,i),delta(:,i-1),Mz(i-1));
         
-%     end
+    end
     if abs(x(3,i)) > 1
         spin = 1;
     elseif abs(x(3,i)) < 0.2
@@ -101,6 +102,13 @@ while t  <= simTime
     
     %     [Torque_dot(i),Torque_req(:,i),state_a(:,i),a_opt(:,i)] = MPC_velocity(x(:,i),x(:,i-1),m,sampleTime,wRadius,G_ratio,Nh,rc,q,state_a(:,i-1),a_opt(:,i-1),Torque_req(:,i-1),accelerationRequest(i),Torque_dot(i-1));
     [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),sampleTime,wRadius,m,Torque(:,i-1),omega(:,i),rho,A,Cd,Mz(i));
+    
+    if ifSWD 
+        Torque(:,i) = Torque(:,i)*(t<8);
+    elseif ifSWD
+        Torque(:,i) = Torque(:,i)*(X(i,1)<0);
+    end
+
     [FxBrakes] = brakes(accelerationRequest(i),m);
     
     [Fx(:,i), omega(:,i+1)] = ...
@@ -155,10 +163,16 @@ end
     t = t + sampleTime;
 end
 
-Y   = X(2,:);
-Psi = X(3,:);
-X   = X(1,:);
+Y       = X(2,:);
+Psi     = X(3,:);
+X       = X(1,:);
+u       = x(1,:);
+v       = x(2,:);
+r       = x(3,:);
+ax      = x(4,:);
+ay      = x(5,:);
+rDot    = x(6,:);
 
 t = (0:sampleTime:simTime);
 
-GeneratePlots;
+%GeneratePlots;
