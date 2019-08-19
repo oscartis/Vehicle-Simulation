@@ -52,7 +52,7 @@ var = 0;
 while t  <= simTime
     
     if ifStepResponse
-        r_ref(i,:) = 0.5*(t>=8);
+        r_ref(i,:) = .5*(t>=8);
         %    r_ref(i,(t+sampleTime*(1:Nh)>8)) = 1;
 
         accelerationRequest(i) = (targetSpeed-x(1,i));
@@ -106,7 +106,7 @@ while t  <= simTime
     [Torque(:,i)] = motorController(accelerationRequest(i),x(:,i),sampleTime,wRadius,m,Torque(:,i-1),omega(:,i),rho,A,Cd,Mz(i));
     
     if ifSWD 
-        Torque(:,i) = Torque(:,i)*(t<8);
+        Torque(:,i) = Torque(:,i)*(t<10);
     elseif ifDLC
         Torque(:,i) = Torque(:,i)*(X(1,i)<0);
     end

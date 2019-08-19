@@ -1,5 +1,5 @@
 function [localPath, aimPoint, curveRadius] = curveEstimation(localPath,aimDist)
-DoP = 7;
+DoP = 2;
 if DoP < 1 || mod(DoP,1) ~= 0
     error('Invalid DoP')
 end

@@ -37,11 +37,11 @@ ylabel('Yaw Rate [rad/s]')
 
 legend('Yaw rate','Yaw rate reference','Location','NorthWest')
 
-strSpeed = sprintf('Speed = %i km/h',round(mean(wB.u(yawRate90-200))*3.6));
+strSpeed = sprintf('Speed = %i km/h',round(max(wB.u)*3.6));
 text(xlim(1)+0.05*(xlim(2)-xlim(1)),ylim(1)+0.75*(ylim(2)-ylim(1)),strSpeed,'FontSize',FS)
 
 set(gca,'FontSize',FS)
-
+set(gca,'LineWidth',LW)
 
 
 %% Plot r and rref with B = 0
@@ -72,11 +72,36 @@ text(xlim(1)+0.05*(xlim(2)-xlim(1)),ylim(1)+0.75*(ylim(2)-ylim(1)),strSpeed,'Fon
 xlabel('Time [s]')
 ylabel('Yaw Rate [rad/s]')
 set(gca,'FontSize',FS)
+set(gca,'LineWidth',LW)
+
+%%
+
+figure('Position',[0,0, aspectRatioW]);
+
+hBeta1 = plot(wB.t - t0,atan2(wB.v,wB.u)*180/pi,'ro-');
+hold on
+hBeta2 = plot(woB.t - t0,atan2(woB.v,woB.u)*180/pi,'kv-');
+xlim = [-0.5,1.5];
+
+markerStart = find(wB.t == xlim(1)+t0);
+markerEnd   = find(wB.t == xlim(2)+t0);
+
+set(gca,'xlim',xlim)
+set(get(gca,'Children'),'LineWidth',LW)
+set(hBeta1,'MarkerIndices',(markerStart:ceil((markerEnd-markerStart)/20):markerEnd))
+set(hBeta2,'MarkerIndices',(markerStart:ceil((markerEnd-markerStart)/20):markerEnd)+ceil((markerEnd-markerStart)/40))
+set(get(gca,'Children'),'MarkerSize',10)
+set(gca,'FontSize',FS)
+xlabel('Time [s]')
+ylabel('Side slip angle [degree]')
+
+legend('Yaw-Beta controller','Yaw controller')
+set(gca,'LineWidth',LW)
 
 %% Calculate overshoot
 
-OsWB = max(wB.r(1,:)) - 1;
-OsWoB = max(woB.r(1,:)) - 1;
+OsWB = max(wB.r(1,:)) - ref;
+OsWoB = max(woB.r(1,:)) - ref;
 
 
 
